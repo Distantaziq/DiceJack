@@ -35,7 +35,9 @@ void CGamePlay::PlayerDiceRoll()
 
 	AIDiceRoll();
 
+#ifndef DEBUG
 	system("cls");
+#endif
 	std::cout << "You have " << _userCredits << " credits. Your bet is " << _currentBet << " credits."
 		<< "\n===================================================================="
 		<< "\nI have rolled 2 six-sided dice and they came up with " << dieOne << " and " << dieTwo << "."
@@ -172,7 +174,7 @@ bool CGamePlay::PlaceBet()
 
 const void CGamePlay::InitialRoll()
 {
-	if (PlaceBet())						//Place ad check bet 
+	if (PlaceBet())						//Place and check bet 
 	{
 		PlayerDiceRoll();					//Roll initial roll
 	}
@@ -189,8 +191,9 @@ void CGamePlay::Clear()
 
 void CGamePlay::HandleFinish()
 {
+#ifndef DEBUG
 	system("cls");
-
+#endif
 	std::cout << "The final score is"
 		<< "\nYour total: " << _currentSum
 		<< "\nHouse total: " << _currentAISum << std::endl;
