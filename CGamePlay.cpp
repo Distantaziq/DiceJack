@@ -1,5 +1,5 @@
 #include"CGamePlay.h"
-#define DEBUG
+//#define DEBUG
 
 int CGamePlay::HandleInput()
 {
