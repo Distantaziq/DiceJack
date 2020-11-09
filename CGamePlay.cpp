@@ -290,7 +290,6 @@ void CGamePlay::HandleRound()
 	} while (IsPlayerScoreValid() && IsAIScoreValid());				//As long as no one is fat
 
 	HandleFinish();
-
 }
 
 const bool CGamePlay::IsUserCreditsValid()
@@ -331,8 +330,10 @@ int CGamePlay::MainGame(bool& isGameOver)
 			//We want to play a round
 			if (userInput == 1)
 			{
-				InitialRoll();									//Run initial roll
-				HandleRound();									//Do we want another round?
+				//Place bet
+				InitialRoll();	
+				//Do we want to continue the round
+				HandleRound();									
 				continue;
 			}
 			//We don't want to play anymore
