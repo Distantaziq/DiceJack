@@ -2,12 +2,15 @@
 #include<cstdlib>
 #include<ctime>
 #include<iostream>
+#include<random>
 
 
 class CGamePlay
 {
 public:
-	const void SetSeed() { srand(time(nullptr)); };
+	//old random
+	//const void SetSeed() { srand(time(nullptr)); };
+
 	const bool IsAIScoreValid() { return _currentAISum < 21; }
 	const bool IsPlayerScoreValid() { return _currentSum < 21; }
 	void AddPlayerSum(const int firstDie, const int secondDie) { _currentSum += firstDie + secondDie; }
@@ -15,7 +18,8 @@ public:
 
 	int HandleInput();
 
-	int DiceRoll();
+	const int RandomInteger(const int Min, const int Max);
+	const int DiceRoll();
 	void PlayerDiceRoll();
 	void AIDiceRoll();
 	const bool ShouldAIRoll();
@@ -51,7 +55,11 @@ private:
 
 	bool IsHouseStuck{ false };
 	bool IsPlayerStuck{ false };
-	bool IsSeedSet{ false };
+	//old random
+	//bool IsSeedSet{ false };
+
+	std::random_device _randomDevice;
+	std::mt19937 _randomGenerator = std::mt19937(_randomDevice());
 
 };
 

@@ -11,28 +11,35 @@ int CGamePlay::HandleInput()
 	return userInput;
 }
 
-int CGamePlay::DiceRoll()
+const int CGamePlay::RandomInteger(int Min, int Max)
 {
-	if (!IsSeedSet)
+	std::uniform_int_distribution<int> diceRoller(Min, Max);
+	return diceRoller(_randomGenerator);
+}
+
+const int CGamePlay::DiceRoll()
+{
+	//old random
+	/*if (!IsSeedSet)
 	{
 		SetSeed();
 		IsSeedSet = true;
 	}
-
 	return (rand() % DICEMAX) + DICEMIN;
+	*/
+
+	return RandomInteger(DICEMIN, DICEMAX);
 }
 
 //Player initiated roll
 void CGamePlay::PlayerDiceRoll()
 {
-
 	int dieOne = DiceRoll();
 	int dieTwo = DiceRoll();
 #ifdef DEBUG
 	std::cerr << ">>PlayerDice is " << dieOne << " and " << dieTwo << " which equals " << dieOne + dieTwo << std::endl;
 #endif
 	AddPlayerSum(dieOne, dieTwo);
-
 	AIDiceRoll();
 
 #ifndef DEBUG
