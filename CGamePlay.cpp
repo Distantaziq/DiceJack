@@ -181,9 +181,9 @@ bool CGamePlay::PlaceBet()
 
 const void CGamePlay::InitialRoll()
 {
-	if (PlaceBet())						//Place and check bet 
+	if (PlaceBet())
 	{
-		PlayerDiceRoll();					//Roll initial roll
+		PlayerDiceRoll();
 	}
 }
 
@@ -240,7 +240,7 @@ void CGamePlay::HandleFinish()
 	}
 	else if (_currentSum < 21 && _currentSum > _currentAISum || _currentAISum > 21 && _currentSum < 21)
 	{
-		//If Player has less than 21 but more than AI
+		//If Player has less than 21 but more than AI OR the AI got fat
 		std::cout << "\nThe house lost. You win, credits doubled!"
 			<< "\n You gained " << _currentBet * 2 << " credits!\n" << std::endl;
 		_userCredits += (_currentBet * 2);
@@ -267,11 +267,13 @@ void CGamePlay::HandleRound()
 
 		int userInput{ HandleInput() };
 
-		if (userInput == 1)							//We don't want to play more this round
+		//We want to continue rolling
+		if (userInput == 1)							
 		{
 			PlayerDiceRoll();
 		}
-		else if (userInput == 2)					//We want to continue rolling
+		//We don't want to play more this round
+		else if (userInput == 2)					
 		{
 			IsPlayerStuck = true;
 			while (!IsHouseStuck)
@@ -326,7 +328,6 @@ int CGamePlay::MainGame(bool& isGameOver)
 				<< " [2] Leave the table\n" << std::endl;
 
 			int userInput{ HandleInput() };
-
 			//We want to play a round
 			if (userInput == 1)
 			{
@@ -362,7 +363,7 @@ const int CGamePlay::MainLoop()
 		MainGame(gameOver);
 	}
 
-	std::cout << "\nThanks for playing! Have a nice day!" << std::endl;
+	std::cout << "\nThank you for playing! Have a nice day!" << std::endl;
 
 	return 0;
 }
