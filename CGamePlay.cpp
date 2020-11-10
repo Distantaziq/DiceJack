@@ -196,21 +196,42 @@ void CGamePlay::Clear()
 	IsPlayerStuck = false;
 }
 
+void CGamePlay::UpdateCredits(const FinishType Outcome)
+{
+
+	if (Outcome == FinishType::Win)
+	{
+		_userCredits += (_currentBet * 2);
+	}
+	else if (Outcome == FinishType::Stuck)
+	{
+		_userCredits -= (_currentBet / 2);
+	}
+	else if (Outcome == FinishType::Lost)
+	{
+		_userCredits -= _currentBet;
+	}
+	else
+	{
+		std::cerr << "Error - invalid finish" << std::endl;
+	}
+}
+
 void CGamePlay::HandleFinish()
 {
 #ifndef DEBUG
 	system("cls");
 #endif
 	std::cout << "The final score is"
-		<< "\nYour total: " << _currentSum
-		<< "\nHouse total: " << _currentAISum << std::endl;
+		<< "\n Your total: " << _currentSum
+		<< "\n House total: " << _currentAISum << std::endl;
 
 	if (_currentSum == 21 && _currentAISum != 21)
 	{
 		//If Player has 21
 		std::cout << "\nDiceJack! Credits doubled!"
 			<< "\n You gained " << _currentBet * 2 << " credits!\n" << std::endl;
-		_userCredits += (_currentBet * 2);
+		UpdateCredits(FinishType::Win);
 		Clear();
 	}
 	else if (_currentSum == 21 && _currentAISum == 21 || _currentSum == _currentAISum)
@@ -227,13 +248,13 @@ void CGamePlay::HandleFinish()
 		{
 			std::cout << "\nThe house wins. You stuck but lost the bet."
 				<< "\n Sticking: You lost " << _currentBet / 2 << " credits!\n" << std::endl;
-			_userCredits -= (_currentBet / 2);
+			UpdateCredits(FinishType::Stuck);
 		}
 		else
 		{
 			std::cout << "\nThe house wins. You lost the bet."
 				<< "\n You lost " << _currentBet << " credits!\n" << std::endl;
-			_userCredits -= _currentBet;
+			UpdateCredits(FinishType::Lost);
 		}
 
 		Clear();
@@ -243,7 +264,7 @@ void CGamePlay::HandleFinish()
 		//If Player has less than 21 but more than AI OR the AI got fat
 		std::cout << "\nThe house lost. You win, credits doubled!"
 			<< "\n You gained " << _currentBet * 2 << " credits!\n" << std::endl;
-		_userCredits += (_currentBet * 2);
+		UpdateCredits(FinishType::Win);
 		Clear();
 	}
 	else
@@ -251,7 +272,7 @@ void CGamePlay::HandleFinish()
 		//If the Player is fat
 		std::cout << "\nSorry, that's too much. You lost the bet."
 			<< "\n You lost " << _currentBet << " credits!\n" << std::endl;
-		_userCredits -= _currentBet;
+		UpdateCredits(FinishType::Lost);
 		Clear();
 	}
 }

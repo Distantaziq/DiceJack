@@ -32,6 +32,14 @@ public:
 
 	void Clear();
 
+	enum class FinishType
+	{
+		Win,
+		Stuck,
+		Lost
+	};
+
+	void UpdateCredits(const FinishType);
 	void HandleFinish();
 	void HandleRound();
 
