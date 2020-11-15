@@ -1,39 +1,43 @@
 #pragma once
+#include<array>
 #include<cstdlib>
 #include<ctime>
 #include<iostream>
 #include<random>
+#include<string>
 
 
 class CGamePlay
 {
 public:
 	//old random
-	//const void SetSeed() { srand(time(nullptr)); };
+	//const void SetSeed() { srand( (unsigned int)time(nullptr) ); };
 
-	const bool IsAIScoreValid() { return _currentAISum < 21; }
-	const bool IsPlayerScoreValid() { return _currentSum < 21; }
+	bool IsAIScoreValid() const { return _currentAISum < 21; }
+	bool IsPlayerScoreValid() const { return _currentSum < 21; }
 	void AddPlayerSum(const int firstDie, const int secondDie) { _currentSum += firstDie + secondDie; }
 	void AddAISum(const int firstDie, const int secondDie) { _currentAISum += firstDie + secondDie; }
 
-	int HandleInput();
+	std::string ProcessInput(const std::string& toInt);
+	const int HandleInput();
 
 	const int RandomInteger(const int Min, const int Max);
 	const int DiceRoll();
 	void PlayerDiceRoll();
 	void AIDiceRoll();
-	const bool ShouldAIRoll();
+	bool ShouldAIRoll();
 
-	const bool ValidAmount(const int Bet) { return Bet <= _userCredits; }
-	const bool ValidRange(const int Bet);
+	bool ValidAmount(const int Bet) const { return Bet <= _userCredits; }
+	bool ValidRange(const int Bet) const;
 	bool PlaceBet();
 
-	const void InitialRoll();
+	void InitialRoll();
 
 	void Clear();
 
 	enum class FinishType
 	{
+		DiceJack,
 		Win,
 		Stuck,
 		Lost
@@ -43,18 +47,22 @@ public:
 	void HandleFinish();
 	void HandleRound();
 
-	const bool IsUserCreditsValid();
-	int MainGame(bool& isGameOver);
-	const int MainLoop();
-
-	const int MAXJACK{ 21 };
-	const int GOAL{ 300 };
+	bool IsUserCreditsValid() const;
+	void MainGame(bool& isGameOver);
+	void MainLoop();
 
 private:
 	const int DICEMIN{ 1 };
 	const int DICEMAX{ 6 };
 	const int MINBET{ 1 };
 	const int MAXBET{ 50 };
+	std::array<char, 10> _Numbers
+	{
+		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+	};
+
+	const int MAXJACK{ 21 };
+	const int CREDITSGOAL{ 300 };
 
 	int _userCredits{ 100 };
 	int _currentBet{ 0 };

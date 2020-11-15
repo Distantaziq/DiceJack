@@ -1,14 +1,59 @@
 #include"CGamePlay.h"
 //#define DEBUG
+//#define SUPERDEBUG
 
-int CGamePlay::HandleInput()
+std::string CGamePlay::ProcessInput(const std::string& toInt)
+{
+	std::string Ret{""};
+	for (int i{ 0 }; i < toInt.length(); ++i)
+	{
+		for (int j{ 0 }; j < _Numbers.size(); ++j)
+		{
+			if (toInt[i] == _Numbers[j])
+			{
+				Ret += toInt[i];
+			}
+		}
+	}
+#ifdef SUPERDEBUG
+	std::cerr << "<<Ret after for-loop is: " << Ret << std::endl;
+#endif
+	if (Ret == "")
+	{
+#ifdef SUPERDEBUG
+		std::cerr << "<<Ret is empty, setting to 0: " << Ret << std::endl;
+#endif
+		Ret = '0';
+#ifdef SUPERDEBUG
+		std::cerr << "<<Ret is now 0: " << Ret << std::endl;
+#endif
+	}
+
+	return Ret;
+}
+
+const int CGamePlay::HandleInput()
 {
 	std::cin.clear();
-	int userInput{};
-	std::cin >> userInput;
+	std::string userInput{""};
+	do
+	{
+		std::getline(std::cin, userInput, '\n');
+		if (userInput == "")
+		{
+			std::cout << "Please enter a number." << std::endl;
+		}
+
+	} while (userInput == "");
+
+	std::string handledInput{ ProcessInput(userInput) };
+#ifdef SUPERDEBUG
+	std::cerr << "<<handledInput: " << handledInput << std::endl;
+#endif
+	const int RET{ std::stoi(handledInput) };
 	std::endl(std::cout);
 
-	return userInput;
+	return RET;
 }
 
 const int CGamePlay::RandomInteger(int Min, int Max)
@@ -51,7 +96,7 @@ void CGamePlay::PlayerDiceRoll()
 		<< "\n\n Your score is currently " << _currentSum << "."
 		<< "\n The house score is currently " << _currentAISum << ".\n" << std::endl;
 
-	if (IsHouseStuck)
+	if (IsHouseStuck && _currentSum != 21)
 	{
 		std::cout << "The house is stuck.\n" << std::endl;
 	}
@@ -60,7 +105,8 @@ void CGamePlay::PlayerDiceRoll()
 //AI initiated roll
 void CGamePlay::AIDiceRoll()
 {
-	if (ShouldAIRoll() && !IsHouseStuck && _currentSum <= 21)
+	//if the AI should roll and AI sum is below 20
+	if (_currentAISum < 20 && ShouldAIRoll())
 	{
 		int AIDieOne = DiceRoll();
 		int AIDieTwo = DiceRoll();
@@ -73,76 +119,118 @@ void CGamePlay::AIDiceRoll()
 		std::cerr << "**Current AISum: " << _currentAISum << std::endl;
 #endif
 	}
-}
-
-const bool CGamePlay::ShouldAIRoll()
-{
-	if (IsPlayerStuck && _currentSum < 21 && _currentAISum > _currentSum)
-	{
-		IsHouseStuck = true;
-	}
-	else if (_currentAISum >= 20 && _currentAISum <= 21 && !IsHouseStuck)
-	{
-		IsHouseStuck = true;
-	}
-	else if (_currentAISum >= 16 && !IsHouseStuck)
-	{
-		int WillAIRoll{ DiceRoll() };
-#ifdef DEBUG
-		std::cerr << "**AIScore is equal to or more than 16, the die went " << WillAIRoll << std::endl;
-#endif
-
-		if (WillAIRoll >= 4)
-		{
-#ifdef DEBUG
-			std::cerr << "**AI will roll" << std::endl;
-#endif
-			return true;
-		}
-		else
-		{
-#ifdef DEBUG
-			std::cerr << "**AI will not roll, house sticks" << std::endl;
-#endif
-			IsHouseStuck = true;
-			return false;
-		}
-	}
-	else if (_currentAISum >= 10 && _currentAISum <= 15 && !IsHouseStuck)
-	{
-		int WillAIRoll{ DiceRoll() };
-#ifdef DEBUG
-		std::cerr << "**AIScore is equal to or more than 10, the die went " << WillAIRoll << std::endl;
-#endif
-
-		if (WillAIRoll >= 2)
-		{
-#ifdef DEBUG
-			std::cerr << "**AI will roll" << std::endl;
-#endif
-			return true;
-		}
-		else
-		{
-#ifdef DEBUG
-			std::cerr << "**AI will not roll, house sticks" << std::endl;
-#endif
-			IsHouseStuck = true;
-			return false;
-		}
-	}
 	else
 	{
-#ifdef DEBUG
-		std::cerr << "**AIScore is less than 10, rolling" << std::endl;
-#endif
-		return true;
+		IsHouseStuck = true;
 	}
-
-	return true;
 }
 
-const bool CGamePlay::ValidRange(const int Bet)
+bool CGamePlay::ShouldAIRoll()
+{
+	int WillAIRoll{ DiceRoll() };
+
+	//If player is not stuck
+	if (!IsPlayerStuck)
+	{
+		if (_currentAISum >= 16)
+		{
+#ifdef DEBUG
+			std::cerr << "**NOTSTUCK AIScore is equal to or more than 16, the die went " << WillAIRoll << std::endl;
+#endif
+			if (WillAIRoll >= 4)
+			{
+#ifdef DEBUG
+				std::cerr << "**NOTSTUCK >=16 AI will roll" << std::endl;
+#endif
+				return true;
+			}
+			else
+			{
+#ifdef DEBUG
+				std::cerr << "**NOTSTUCK >=16 AI will not roll, house sticks" << std::endl;
+#endif
+				return false;
+			}
+		}
+		else
+		{
+			if (WillAIRoll >= 1)
+			{
+#ifdef DEBUG
+				std::cerr << "**NOTSTUCK <16 AI will roll" << std::endl;
+#endif
+				return true;
+			}
+			else
+			{
+#ifdef DEBUG
+				std::cerr << "**NOTSTUCK <16 AI will not roll, house sticks" << std::endl;
+#endif
+				return false;
+			}
+		}
+	}
+	//If player is stuck
+	else
+	{
+		if (_currentAISum < _currentSum)
+		{
+			if (_currentAISum >= 16)
+			{
+#ifdef DEBUG
+				std::cerr << "**STUCK AIScore is equal to or more than 16, the die went " << WillAIRoll << std::endl;
+#endif
+				if (WillAIRoll >= 4)
+				{
+#ifdef DEBUG
+					std::cerr << "**STUCK LOWSCORE >=16 AI will roll" << std::endl;
+#endif
+					return true;
+				}
+				else
+				{
+#ifdef DEBUG
+					std::cerr << "**STUCK LOWSCORE >=16 AI will not roll, house sticks" << std::endl;
+#endif
+					return false;
+				}
+			}
+			else if (_currentAISum >= 11)
+			{
+				if (WillAIRoll >= 2)
+				{
+#ifdef DEBUG
+					std::cerr << "**STUCK LOWSCORE >=11 AI will roll" << std::endl;
+#endif
+					return true;
+				}
+				else
+				{
+#ifdef DEBUG
+					std::cerr << "**STUCK LOWSCORE >=11 AI will not roll, house sticks" << std::endl;
+#endif
+					return false;
+				}
+			}
+			else
+			{
+#ifdef DEBUG
+					std::cerr << "**STUCK LOWSCORE <11 AI will roll" << std::endl;
+#endif
+					return true;
+			}
+		}
+		else
+		{
+#ifdef DEBUG
+			std::cerr << "**STUCK HIGHSCORE AI will not roll, house sticks" << std::endl;
+#endif
+			return false;
+		}
+	}
+}
+
+bool CGamePlay::ValidRange(const int Bet) const
 {
 	if (Bet >= MINBET && Bet <= MAXBET)
 	{
@@ -179,7 +267,7 @@ bool CGamePlay::PlaceBet()
 	return true;
 }
 
-const void CGamePlay::InitialRoll()
+void CGamePlay::InitialRoll()
 {
 	if (PlaceBet())
 	{
@@ -199,9 +287,13 @@ void CGamePlay::Clear()
 void CGamePlay::UpdateCredits(const FinishType Outcome)
 {
 
-	if (Outcome == FinishType::Win)
+	if (Outcome == FinishType::DiceJack)
 	{
 		_userCredits += (_currentBet * 2);
+	}
+	else if (Outcome == FinishType::Win)
+	{
+		_userCredits += _currentBet;
 	}
 	else if (Outcome == FinishType::Stuck)
 	{
@@ -231,15 +323,13 @@ void CGamePlay::HandleFinish()
 		//If Player has 21
 		std::cout << "\nDiceJack! Credits doubled!"
 			<< "\n You gained " << _currentBet * 2 << " credits!\n" << std::endl;
-		UpdateCredits(FinishType::Win);
-		Clear();
+		UpdateCredits(FinishType::DiceJack);
 	}
 	else if (_currentSum == 21 && _currentAISum == 21 || _currentSum == _currentAISum)
 	{
 		//If both have 21 or end up with the same score below 21
 		std::cout << "\nShared win! Money back."
 			<< "\n " << _currentBet << " credits was returned.\n" << std::endl;
-		Clear();
 	}
 	else if (_currentSum != 21 && _currentAISum == 21 || _currentAISum < 21 && _currentAISum > _currentSum)
 	{
@@ -256,16 +346,13 @@ void CGamePlay::HandleFinish()
 				<< "\n You lost " << _currentBet << " credits!\n" << std::endl;
 			UpdateCredits(FinishType::Lost);
 		}
-
-		Clear();
 	}
 	else if (_currentSum < 21 && _currentSum > _currentAISum || _currentAISum > 21 && _currentSum < 21)
 	{
 		//If Player has less than 21 but more than AI OR the AI got fat
-		std::cout << "\nThe house lost. You win, credits doubled!"
-			<< "\n You gained " << _currentBet * 2 << " credits!\n" << std::endl;
+		std::cout << "\nThe house lost. You win the bet!"
+			<< "\n You gained " << _currentBet << " credits!\n" << std::endl;
 		UpdateCredits(FinishType::Win);
-		Clear();
 	}
 	else
 	{
@@ -273,8 +360,8 @@ void CGamePlay::HandleFinish()
 		std::cout << "\nSorry, that's too much. You lost the bet."
 			<< "\n You lost " << _currentBet << " credits!\n" << std::endl;
 		UpdateCredits(FinishType::Lost);
-		Clear();
 	}
+	Clear();
 }
 
 void CGamePlay::HandleRound()
@@ -313,7 +400,7 @@ void CGamePlay::HandleRound()
 	HandleFinish();
 }
 
-const bool CGamePlay::IsUserCreditsValid()
+bool CGamePlay::IsUserCreditsValid() const
 {
 	if (_userCredits >= 300)
 	{
@@ -332,7 +419,7 @@ const bool CGamePlay::IsUserCreditsValid()
 	}
 }
 
-int CGamePlay::MainGame(bool& isGameOver)
+void CGamePlay::MainGame(bool& isGameOver)
 {
 	do
 	{
@@ -361,7 +448,6 @@ int CGamePlay::MainGame(bool& isGameOver)
 			else if (userInput == 2)
 			{
 				isGameOver = true;
-				return 0;
 			}
 			else
 			{
@@ -373,19 +459,17 @@ int CGamePlay::MainGame(bool& isGameOver)
 	} while (!isGameOver);
 }
 
-const int CGamePlay::MainLoop()
+void CGamePlay::MainLoop()
 {
 	bool gameOver{ false };
 
 	std::cout << "Welcome to DiceJack! Please take a seat at the table!\n"
-		<< "You start with " << _userCredits << " credits. You win if you get " << GOAL << " credits!\n" << std::endl;
+		<< "You start with " << _userCredits << " credits. You win if you get " << CREDITSGOAL << " credits!\n" << std::endl;
 
-	while (!gameOver && _userCredits != GOAL)
+	while (!gameOver)
 	{
 		MainGame(gameOver);
 	}
 
 	std::cout << "\nThank you for playing! Have a nice day!" << std::endl;
-
-	return 0;
 }
