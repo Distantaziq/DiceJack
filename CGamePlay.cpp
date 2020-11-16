@@ -56,13 +56,13 @@ const int CGamePlay::HandleInput()
 	return RET;
 }
 
-const int CGamePlay::RandomInteger(int Min, int Max)
+int CGamePlay::RandomInteger(const int Min, const int Max)
 {
 	std::uniform_int_distribution<int> diceRoller(Min, Max);
 	return diceRoller(_randomGenerator);
 }
 
-const int CGamePlay::DiceRoll()
+int CGamePlay::DiceRoll()
 {
 	//old random
 	/*if (!IsSeedSet)

@@ -21,8 +21,8 @@ public:
 	std::string ProcessInput(const std::string& toInt);
 	const int HandleInput();
 
-	const int RandomInteger(const int Min, const int Max);
-	const int DiceRoll();
+	int RandomInteger(const int Min, const int Max);
+	int DiceRoll();
 	void PlayerDiceRoll();
 	void AIDiceRoll();
 	bool ShouldAIRoll();
