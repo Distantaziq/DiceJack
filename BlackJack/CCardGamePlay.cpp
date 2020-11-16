@@ -456,7 +456,7 @@ void CCardGamePlay::AIDraw()
 {
 	bool IsAI{ true };
 	//if the AI should roll and AI sum is below 19
-	if (_AIScore < 19 && ShouldAIDraw())
+	if (_AIScore < 20 && ShouldAIDraw())
 	{
 		Card AICard{ "NULL", 0 };
 		DrawCard(AICard, IsAI);
@@ -619,9 +619,6 @@ void CCardGamePlay::PrintDeck(const std::vector<Card>& DeckToPrint)
 	}
 }
 
-
-//om spelare förlorar, house inte dra igen
-
 void CCardGamePlay::PrintFinalCards()
 {
 	std::cout << "\n====================================================================";
@@ -650,7 +647,6 @@ void CCardGamePlay::HandleFinish()
 {
 	PrintFinalCards();
 
-	//std::cout << "===================================================================="
 		std::cout << "\n\nThe final score is"
 		<< "\n Your total: " << _userScore
 		<< "\n House total: " << _AIScore << std::endl;
