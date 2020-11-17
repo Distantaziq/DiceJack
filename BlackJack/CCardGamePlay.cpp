@@ -204,7 +204,7 @@ void CCardGamePlay::AddCardValue(const Card& CardToCheck, const bool IsAI)
 #ifdef VALUEDEBUG
 			std::cerr << "\n@@This is an Ace, adding " << FACECARDVALUE + 1 << " to the AIScore" << std::endl;
 #endif
-			if (_AIScore + (FACECARDVALUE + 1) > 21)
+			if (_AIScore + (FACECARDVALUE + 1) != 21)
 			{
 				AddAIValue(1);
 			}
@@ -218,7 +218,7 @@ void CCardGamePlay::AddCardValue(const Card& CardToCheck, const bool IsAI)
 #ifdef VALUEDEBUG
 			std::cerr << "\n@@This is an Ace, adding " << FACECARDVALUE + 1 << " to the userScore" << std::endl;
 #endif
-			if (_userScore + (FACECARDVALUE + 1) > 21)
+			if (_userScore + (FACECARDVALUE + 1) != 21)
 			{
 				AddUserValue(1);
 			}
@@ -611,7 +611,7 @@ void CCardGamePlay::UpdateCredits(const FinishType Outcome)
 	}
 }
 
-void CCardGamePlay::PrintDeck(const std::vector<Card>& DeckToPrint)
+void CCardGamePlay::PrintCurrentHand(const std::vector<Card>& DeckToPrint)
 {
 	for (size_t i{ 0 }; i < DeckToPrint.size(); ++i)
 	{
@@ -624,7 +624,7 @@ void CCardGamePlay::PrintFinalCards()
 	std::cout << "\n====================================================================";
 	std::cout << "\nRound finished!\n"
 		<< "\nYour cards are";
-	PrintDeck(_SCurrentRoundUserDeck);
+	PrintCurrentHand(_SCurrentRoundUserDeck);
 	if (!IsPlayerStuck)
 	{
 		std::cout << "\n Your final card was ";
@@ -633,7 +633,7 @@ void CCardGamePlay::PrintFinalCards()
 	}
 
 	std::cout << "\n\nThe house cards are";
-	PrintDeck(_SCurrentRoundAIDeck);
+	PrintCurrentHand(_SCurrentRoundAIDeck);
 	if (!IsHouseStuck)
 	{
 		std::cout << "\n The house's final card was ";

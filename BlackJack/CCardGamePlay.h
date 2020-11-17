@@ -67,7 +67,7 @@ public:
 
 	void UpdateCredits(const FinishType);
 	void HandleFinish();
-	void PrintDeck(const std::vector<Card>& DeckToPrint);
+	void PrintCurrentHand(const std::vector<Card>& DeckToPrint);
 	void PrintFinalCards();
 	void PrintUpdatedScore();
 	void CheckDeck(std::vector<Card>& Deck);
