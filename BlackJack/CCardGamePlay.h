@@ -6,8 +6,13 @@
 #include<string_view>
 #include<vector>
 
+//#include "CGameState.h"
+#include "CHandleInput.h"
+
 class CCardGamePlay
 {
+	//friend class CGameState;
+
 	struct Card
 	{
 	/*	//default constructor
@@ -22,8 +27,10 @@ class CCardGamePlay
 public:
 
 	bool IsScoreValid() const { return _AIScore < 21 && _userScore < 21; }
+	/*
 	std::string ProcessInput(const std::string& toInt);
 	const int HandleInput();
+	*/
 
 	void ResetDeck(std::vector<Card>& DeckToReset);
 	int RandomInteger(const int Min, const int Max);
@@ -71,10 +78,27 @@ public:
 	void PrintFinalCards();
 	void PrintUpdatedScore();
 	void CheckDeck(std::vector<Card>& Deck);
-	void HandleRound();
+	void CheckDeck(int&& Deck);
 	bool IsUserCreditsValid() const;
+
+	/*
+	void HandleRound();
 	void MainGame(bool& IsGameOver);
 	void MainLoop();
+	*/
+
+	const int GetMaxJack() const { return MAXJACK; };
+	const int GetCreditsGoal() const { return CREDITSGOAL; };
+	const int GetCredits() const { return _userCredits; };
+	const int GetBet() const { return _currentBet; };
+	const int GetAIScore() const { return _AIScore; };
+	const int GetPublicAIScore() const { return _publicAIScore; };
+	const int GetUserScore() const { return _userScore; };
+	bool IsHouseStuck() const { return _IsHouseStuck; };
+	bool IsPlayerStuck() const { return _IsPlayerStuck; };
+	void PlayerSticks() { _IsPlayerStuck = true; };
+	void HouseSticks() { _IsHouseStuck = true; };
+	int GetDeckSize() const { return _SDeck.size(); };
 
 private:
 	const int CARDVALUEMIN{ 2 };
@@ -84,10 +108,12 @@ private:
 	const int MINBET{ 1 };
 	const int MAXBET{ 50 };
 	const int FACECARDVALUE{ 10 };
+	/*
 	std::array<char, 10> _Numbers
 	{
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
 	};
+	*/
 	
 	const int MAXJACK{ 21 };
 	const int CREDITSGOAL{ 300 };
@@ -98,9 +124,9 @@ private:
 	int _AIScore{ 0 };
 	int _publicAIScore{ 0 };
 
-	bool IsFirstRound{ true };
-	bool IsHouseStuck{ false };
-	bool IsPlayerStuck{ false };
+	bool _IsFirstRound{ true };
+	bool _IsHouseStuck{ false };
+	bool _IsPlayerStuck{ false };
 
 	Card _LastAICard{ "NULL", 0 };
 	Card _LastUserCard{ "NULL", 0 };

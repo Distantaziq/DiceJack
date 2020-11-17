@@ -7,6 +7,7 @@
 //#define NITTYDEBUG // <<
 //#define VALUEDEBUG // @@
 
+/*
 std::string CCardGamePlay::ProcessInput(const std::string& toInt)
 {
 	std::string Ret{ "" };
@@ -51,6 +52,7 @@ const int CCardGamePlay::HandleInput()
 
 	return Ret;
 }
+*/
 
 int CCardGamePlay::RandomInteger(const int Min, const int Max)
 {
@@ -155,11 +157,11 @@ void CCardGamePlay::AddUserValue(int ValueToAdd)
 
 void CCardGamePlay::AddAIValue(int ValueToAdd)
 {
-	if (IsFirstRound)
+	if (_IsFirstRound)
 	{
 		_publicAIScore += ValueToAdd;
 		_AIScore += ValueToAdd;
-		IsFirstRound = false;
+		_IsFirstRound = false;
 #ifdef VALUEDEBUG
 		std::cerr << "\n@@This is the first round, adding " << ValueToAdd << " to the publicAIScore" << std::endl;
 		std::cerr << "\@@Current hidden AIScore is " << _AIScore << std::endl;
@@ -204,13 +206,13 @@ void CCardGamePlay::AddCardValue(const Card& CardToCheck, const bool IsAI)
 #ifdef VALUEDEBUG
 			std::cerr << "\n@@This is an Ace, adding " << FACECARDVALUE + 1 << " to the AIScore" << std::endl;
 #endif
-			if (_AIScore + (FACECARDVALUE + 1) != 21)
+			if (GetAIScore() == 0 || GetUserScore() + (FACECARDVALUE + 1) == 21)
 			{
-				AddAIValue(1);
+				AddAIValue(FACECARDVALUE + 1);
 			}
 			else
 			{
-				AddAIValue(FACECARDVALUE + 1);
+				AddAIValue(1);
 			}
 		}
 		else
@@ -218,13 +220,14 @@ void CCardGamePlay::AddCardValue(const Card& CardToCheck, const bool IsAI)
 #ifdef VALUEDEBUG
 			std::cerr << "\n@@This is an Ace, adding " << FACECARDVALUE + 1 << " to the userScore" << std::endl;
 #endif
-			if (_userScore + (FACECARDVALUE + 1) != 21)
+
+			if (GetUserScore() == 0 || GetUserScore() + (FACECARDVALUE + 1) == 21)
 			{
-				AddUserValue(1);
+				AddUserValue(FACECARDVALUE + 1);
 			}
 			else
 			{
-				AddUserValue(FACECARDVALUE + 1);
+				AddUserValue(1);
 			}
 		}
 	}
@@ -339,9 +342,9 @@ void CCardGamePlay::Clear()
 	_userScore = 0;
 	_AIScore = 0;
 	_publicAIScore = 0;
-	IsHouseStuck = false;
-	IsPlayerStuck = false;
-	IsFirstRound = true;
+	_IsHouseStuck = false;
+	_IsPlayerStuck = false;
+	_IsFirstRound = true;
 	_LastAICard.CardSuit = "NULL";
 	_LastAICard.CardValue = 0;
 	_LastUserCard.CardSuit = "NULL";
@@ -366,10 +369,11 @@ bool CCardGamePlay::PlaceBet()
 {
 	bool IsValidBet{ false };
 	int userBet{};
+	CHandleInput handleInput;
 	std::cout << "How much would you like to bet (maximum " << MAXBET << " credits)?\n" << std::endl;
 	do
 	{
-		userBet = HandleInput();
+		userBet = handleInput.HandleInput();
 		if (ValidAmount(userBet) && ValidRange(userBet))
 		{
 			_currentBet = userBet;
@@ -408,7 +412,7 @@ void CCardGamePlay::AIInitialDraw()
 
 void CCardGamePlay::PrintTopBar() const
 {
-	std::cout << "You have " << _userCredits << " credits. Your bet is " << _currentBet << " credits."
+	std::cout << "You have " << GetCredits() << " credits. Your bet is " << GetBet() << " credits."
 		<< "\n====================================================================" << std::endl;
 }
 
@@ -456,7 +460,7 @@ void CCardGamePlay::AIDraw()
 {
 	bool IsAI{ true };
 	//if the AI should roll and AI sum is below 19
-	if (_AIScore < 20 && ShouldAIDraw())
+	if (GetAIScore() < 20 && ShouldAIDraw())
 	{
 		Card AICard{ "NULL", 0 };
 		DrawCard(AICard, IsAI);
@@ -471,7 +475,7 @@ void CCardGamePlay::AIDraw()
 	}
 	else
 	{
-		IsHouseStuck = true;
+		HouseSticks();
 		std::cout << "\n\n The house sticks." << std::endl;
 	}
 }
@@ -487,9 +491,9 @@ bool CCardGamePlay::ShouldAIDraw()
 	std::cerr << "##AI Public Score is " << _publicAIScore << std::endl;
 #endif
 	//If player is not stuck
-	if (!IsPlayerStuck)
+	if (!IsPlayerStuck())
 	{
-		if (_AIScore >= 16)
+		if (GetAIScore() >= 16)
 		{
 #ifdef AIDEBUG
 			std::cerr << "##NOTSTUCK AIScore is equal to or more than 16, the random went " << WillAIDraw << std::endl;
@@ -530,9 +534,9 @@ bool CCardGamePlay::ShouldAIDraw()
 	//If player is stuck
 	else
 	{
-		if (_AIScore < _userScore)
+		if (GetAIScore() < GetUserScore())
 		{
-			if (_AIScore >= 16)
+			if (GetAIScore() >= 16)
 			{
 #ifdef AIDEBUG
 				std::cerr << "##STUCK AIScore is equal to or more than 16, the random went " << WillAIDraw << std::endl;
@@ -552,7 +556,7 @@ bool CCardGamePlay::ShouldAIDraw()
 					return false;
 				}
 			}
-			else if (_AIScore >= 11)
+			else if (GetAIScore() >= 11)
 			{
 				if (WillAIDraw >= 4)
 				{
@@ -625,7 +629,7 @@ void CCardGamePlay::PrintFinalCards()
 	std::cout << "\nRound finished!\n"
 		<< "\nYour cards are";
 	PrintCurrentHand(_SCurrentRoundUserDeck);
-	if (!IsPlayerStuck)
+	if (!IsPlayerStuck())
 	{
 		std::cout << "\n Your final card was ";
 		PrintCard(_LastUserCard);
@@ -634,7 +638,7 @@ void CCardGamePlay::PrintFinalCards()
 
 	std::cout << "\n\nThe house cards are";
 	PrintCurrentHand(_SCurrentRoundAIDeck);
-	if (!IsHouseStuck)
+	if (!IsHouseStuck())
 	{
 		std::cout << "\n The house's final card was ";
 		PrintCard(_LastAICard);
@@ -648,50 +652,50 @@ void CCardGamePlay::HandleFinish()
 	PrintFinalCards();
 
 		std::cout << "\n\nThe final score is"
-		<< "\n Your total: " << _userScore
-		<< "\n House total: " << _AIScore << std::endl;
+		<< "\n Your total: " << GetUserScore()
+		<< "\n House total: " << GetAIScore() << std::endl;
 
-	if (_userScore == 21 && _AIScore != 21)
+	if (GetUserScore() == 21 && GetAIScore() != 21)
 	{
 		//If Player has 21
 		std::cout << "\nBlackJack! Credits doubled!"
-			<< "\n You gained " << _currentBet * 2 << " credits!\n" << std::endl;
+			<< "\n You gained " << GetBet() * 2 << " credits!\n" << std::endl;
 		UpdateCredits(FinishType::BlackJack);
 	}
-	else if (_userScore == 21 && _AIScore == 21 || _userScore == _AIScore)
+	else if (GetUserScore() == 21 && GetAIScore() == 21 || GetUserScore() == GetAIScore())
 	{
 		//If both have 21 or end up with the same score below 21
 		std::cout << "\nShared win! Money back."
 			<< "\n Your bet was returned.\n" << std::endl;
 	}
-	else if (_userScore != 21 && _AIScore == 21 || _AIScore < 21 && _AIScore > _userScore)
+	else if (GetUserScore() != 21 && GetAIScore() == 21 || GetAIScore() < 21 && GetAIScore() > GetUserScore())
 	{
 		//If AI has 21 OR if AI has less than 21 but more than Player
-		if (IsPlayerStuck)
+		if (IsPlayerStuck())
 		{
 			std::cout << "\nThe house wins. You stuck but lost the bet."
-				<< "\n Sticking: You lost " << _currentBet / 2 << " credits!\n" << std::endl;
+				<< "\n Sticking: You lost " << GetBet() / 2 << " credits!\n" << std::endl;
 			UpdateCredits(FinishType::Stuck);
 		}
 		else
 		{
 			std::cout << "\nThe house wins. You lost the bet."
-				<< "\n You lost " << _currentBet << " credits!\n" << std::endl;
+				<< "\n You lost " << GetBet() << " credits!\n" << std::endl;
 			UpdateCredits(FinishType::Lost);
 		}
 	}
-	else if (_userScore < 21 && _userScore > _AIScore || _AIScore > 21 && _userScore < 21)
+	else if (GetUserScore() < 21 && GetUserScore() > GetAIScore() || GetAIScore() > 21 && GetUserScore() < 21)
 	{
 		//If Player has less than 21 but more than AI OR the AI went bust
 		std::cout << "\nThe house lost. You win the bet!"
-			<< "\n You gained " << _currentBet << " credits!\n" << std::endl;
+			<< "\n You gained " << GetBet() << " credits!\n" << std::endl;
 		UpdateCredits(FinishType::Win);
 	}
 	else
 	{
 		//If the Player went bust
 		std::cout << "\nSorry, that's too much. You lost the bet."
-			<< "\n You lost " << _currentBet << " credits!\n" << std::endl;
+			<< "\n You lost " << GetBet() << " credits!\n" << std::endl;
 		UpdateCredits(FinishType::Lost);
 	}
 	Clear();
@@ -701,10 +705,18 @@ void CCardGamePlay::HandleFinish()
 void CCardGamePlay::PrintUpdatedScore()
 {
 	std::cout << "\n===================================================================="
-		<< "\n Your score is currently " << _userScore << "."
-		<< "\n The house's (known) score is currently " << _publicAIScore << ".\n" << std::endl;
+		<< "\n Your score is currently " << GetUserScore() << "."
+		<< "\n The house's (known) score is currently ";
+	if (GetPublicAIScore() == 1)
+	{
+		std::cout << "an Ace.\n";
+	}
+	else
+	{
+		std::cout << GetPublicAIScore() << ".\n" << std::endl;
+	}
 
-	if (IsHouseStuck && _userScore != 21)
+	if (IsHouseStuck() && GetUserScore() != 21)
 	{
 		std::cout << "The house is stuck.\n" << std::endl;
 	}
@@ -722,6 +734,38 @@ void CCardGamePlay::CheckDeck(std::vector<Card>& Deck)
 	}
 }
 
+void CCardGamePlay::CheckDeck(int&& DeckSize)
+{
+	if (DeckSize >= 40)
+	{
+#ifdef RESETDECKDEBUG
+		std::cerr << ">>Current Deck size is " << DeckSize << ", resetting deck" << std::endl;
+#endif
+		ResetDeck(_SDeck);
+		std::cout << "\n\nThe deck has been shuffled.\n" << std::endl;
+	}
+}
+
+bool CCardGamePlay::IsUserCreditsValid() const
+{
+	if (GetCredits() >= 300)
+	{
+		std::cout << "You have " << GetCredits() << " credits!"
+			<< "\nYou beat the house! Lady luck is on your side!" << std::endl;
+		return false;
+	}
+	else if (GetCredits() <= 0)
+	{
+		std::cout << "You are all out of credits! The game is over!" << std::endl;
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+/*
 void CCardGamePlay::HandleRound()
 {
 	do
@@ -732,7 +776,8 @@ void CCardGamePlay::HandleRound()
 			<< ".\nWhat would you like to do next?\n"
 			<< " [1] Draw another card\n"
 			<< " [2] Stick (and halve your losses)\n" << std::endl;
-		int userInput{ HandleInput() };
+		CHandleInput handleInput;
+		int userInput{ handleInput.HandleInput() };
 
 		if (userInput == 1)
 		{
@@ -759,25 +804,6 @@ void CCardGamePlay::HandleRound()
 	HandleFinish();
 }
 
-bool CCardGamePlay::IsUserCreditsValid() const
-{
-	if (_userCredits >= 300)
-	{
-		std::cout << "You have " << _userCredits << " credits!"
-			<< "\nYou beat the house! Lady luck is on your side!" << std::endl;
-		return false;
-	}
-	else if (_userCredits <= 0)
-	{
-		std::cout << "You are all out of credits! The game is over!" << std::endl;
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-}
-
 void CCardGamePlay::MainGame(bool& IsGameOver)
 {
 	do
@@ -792,7 +818,8 @@ void CCardGamePlay::MainGame(bool& IsGameOver)
 				<< "What would you like to do next?\n"
 				<< " [1] Play a round\n"
 				<< " [2] Leave the table\n" << std::endl;
-			int userInput{ HandleInput() };
+			CHandleInput handleInput;
+			int userInput{ handleInput.HandleInput() };
 
 			if (userInput == 1)
 			{
@@ -858,3 +885,4 @@ void CCardGamePlay::MainLoop()
 
 	std::cout << "\nThank you for playing! Have a nice day!" << std::endl;
 }
+*/

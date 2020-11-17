@@ -21,9 +21,21 @@
     <ClCompile Include="CCardGamePlay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CHandleInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CCardGamePlay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CHandleInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
