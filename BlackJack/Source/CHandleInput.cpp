@@ -1,10 +1,24 @@
 #include "CHandleInput.h"
 
+//#define DEBUG
+#ifdef DEBUG
+#  define DEBUG(x) { std::cerr << x << std::endl; }
+#else
+#  define DEBUG(x)
+#endif
+
 std::string CHandleInput::ProcessInput(const std::string& toInt)
 {
 	std::string Ret{ "" };
 	for (int i{ 0 }; i < toInt.length(); ++i)
 	{
+		//Since the digits 0-9 come after each other in the ASCII table
+		if (toInt[i] >= '0' && toInt[i] <= '9')
+		{
+			Ret += toInt[i];
+		}
+
+		/*
 		for (int j{ 0 }; j < _Numbers.size(); ++j)
 		{
 			if (toInt[i] == _Numbers[j])
@@ -12,6 +26,7 @@ std::string CHandleInput::ProcessInput(const std::string& toInt)
 				Ret += toInt[i];
 			}
 		}
+		*/
 	}
 	if (Ret == "")
 	{
@@ -36,9 +51,8 @@ const int CHandleInput::HandleInput()
 	} while (userInput == "");
 
 	std::string handledInput{ ProcessInput(userInput) };
-#ifdef NITTYDEBUG
-	std::cerr << "<<handledInput: " << handledInput << std::endl;
-#endif
+
+	DEBUG("\n<<handledInput: " << handledInput);
 	const int Ret{ std::stoi(handledInput) };
 	std::endl(std::cout);
 

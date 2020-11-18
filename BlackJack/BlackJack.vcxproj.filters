@@ -15,27 +15,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Source\CCardGamePlay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CCardGamePlay.cpp">
+    <ClCompile Include="Source\CGameState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CHandleInput.cpp">
+    <ClCompile Include="Source\CHandleInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CGameState.cpp">
+    <ClCompile Include="Source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CCardGamePlay.h">
+    <ClInclude Include="Source\CGameState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CHandleInput.h">
+    <ClInclude Include="Source\CHandleInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CGameState.h">
+    <ClInclude Include="Source\CCardGamePlay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

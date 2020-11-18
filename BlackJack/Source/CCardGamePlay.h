@@ -11,8 +11,6 @@
 
 class CCardGamePlay
 {
-	//friend class CGameState;
-
 	struct Card
 	{
 	/*	//default constructor
@@ -26,31 +24,26 @@ class CCardGamePlay
 
 public:
 
-	bool IsScoreValid() const { return _AIScore < 21 && _userScore < 21; }
-	/*
-	std::string ProcessInput(const std::string& toInt);
-	const int HandleInput();
-	*/
-
 	void ResetDeck(std::vector<Card>& DeckToReset);
 	int RandomInteger(const int Min, const int Max);
 
 	void AddCardToDeck(std::vector<Card>& Deck, const std::string& currentSuit, const int currentValue);
 	bool IsCardValid(const std::string& currentSuit, const int currentValue);
 
-	std::string GetName(const int currentValue) const { return _CardName[currentValue - 2]; };
-	std::string GetSuit(const int currentSuit) const { return _CardSuit[currentSuit - 1]; };
+	std::string GetName(const int currentValue) const { return _CardName[currentValue - 2]; }
+	std::string GetSuit(const int currentSuit) const { return _CardSuit[currentSuit - 1]; }
 	int GetValue(const Card& CardToCheck) const;
-
+	std::string CardValueToString(const Card& CardToCheck) const;
 	void PrintCard(const Card& CardToPrint);
-	void PrintCard(const Card&& CardToPrint);
+	std::string GetCardString(const Card& CardToPrint);
+	//void PrintCard(const Card&& CardToPrint);
+
 	void AddUserValue(int ValueToAdd);
 	void AddAIValue(int ValueToAdd);
 	void AddCardValue(const Card& CardToCheck, const bool IsAI);
-	void SetLastCard(const Card& CardToCheck, const bool IsAI = false);
-	void DrawCard(Card &newCard, const bool IsAI);
-	Card ReturnCard();
-	Card ReturnCard(const bool IsAI);
+
+	void SetLastCard(const Card& CardToCheck, const bool IsAI);
+	Card DrawCard(const bool IsAI);
 	
 	void Clear();
 	bool ValidAmount(const int Bet) const { return Bet <= _userCredits; };
@@ -73,32 +66,25 @@ public:
 	};
 
 	void UpdateCredits(const FinishType);
-	void HandleFinish();
 	void PrintCurrentHand(const std::vector<Card>& DeckToPrint);
 	void PrintFinalCards();
-	void PrintUpdatedScore();
-	void CheckDeck(std::vector<Card>& Deck);
-	void CheckDeck(int&& Deck);
-	bool IsUserCreditsValid() const;
+	//void CheckDeck(int&& Deck);
+	void CheckDeck(int Deck);
 
-	/*
-	void HandleRound();
-	void MainGame(bool& IsGameOver);
-	void MainLoop();
-	*/
 
-	const int GetMaxJack() const { return MAXJACK; };
-	const int GetCreditsGoal() const { return CREDITSGOAL; };
-	const int GetCredits() const { return _userCredits; };
-	const int GetBet() const { return _currentBet; };
-	const int GetAIScore() const { return _AIScore; };
-	const int GetPublicAIScore() const { return _publicAIScore; };
-	const int GetUserScore() const { return _userScore; };
-	bool IsHouseStuck() const { return _IsHouseStuck; };
-	bool IsPlayerStuck() const { return _IsPlayerStuck; };
-	void PlayerSticks() { _IsPlayerStuck = true; };
-	void HouseSticks() { _IsHouseStuck = true; };
-	int GetDeckSize() const { return _SDeck.size(); };
+	//Access private members
+	const int GetMaxJack() const { return MAXJACK; }
+	const int GetCreditsGoal() const { return CREDITSGOAL; }
+	const int GetCredits() const { return _userCredits; }
+	const int GetBet() const { return _currentBet; }
+	const int GetAIScore() const { return _AIScore; }
+	const int GetPublicAIScore() const { return _publicAIScore; }
+	const int GetUserScore() const { return _userScore; }
+	bool IsHouseStuck() const { return _IsHouseStuck; }
+	bool IsPlayerStuck() const { return _IsPlayerStuck; }
+	void PlayerSticks() { _IsPlayerStuck = true; }
+	void HouseSticks() { _IsHouseStuck = true; }
+	int GetDeckSize() const { return _SDeck.size(); }
 
 private:
 	const int CARDVALUEMIN{ 2 };
@@ -108,12 +94,6 @@ private:
 	const int MINBET{ 1 };
 	const int MAXBET{ 50 };
 	const int FACECARDVALUE{ 10 };
-	/*
-	std::array<char, 10> _Numbers
-	{
-		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-	};
-	*/
 	
 	const int MAXJACK{ 21 };
 	const int CREDITSGOAL{ 300 };

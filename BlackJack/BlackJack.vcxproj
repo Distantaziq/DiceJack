@@ -18,6 +18,17 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\CCardGamePlay.cpp" />
+    <ClCompile Include="Source\CGameState.cpp" />
+    <ClCompile Include="Source\CHandleInput.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\CCardGamePlay.h" />
+    <ClInclude Include="Source\CGameState.h" />
+    <ClInclude Include="Source\CHandleInput.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -140,17 +151,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="CCardGamePlay.cpp" />
-    <ClCompile Include="CGameState.cpp" />
-    <ClCompile Include="CHandleInput.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CCardGamePlay.h" />
-    <ClInclude Include="CGameState.h" />
-    <ClInclude Include="CHandleInput.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

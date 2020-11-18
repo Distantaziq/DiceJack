@@ -40,3 +40,6 @@
 *.log
 *.txt
 *.enc
+*.filters
+*.vcxproj
+.vs/DiceJack/v16/.suo
