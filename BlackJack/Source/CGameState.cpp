@@ -203,6 +203,15 @@ void CGameState::MainLoop()
 {
 	bool IsGameOver{ false };
 	std::cout << "Welcome to BlackJack! Please take a seat at the table!\n"
+		<< "====================================================================\n\n"
+		<< "Rules of BlackJack:\n"
+		<< " *Common cards (2-10) score their value.\n"
+		<< " *Face cards (Jack-King) score 10.\n"
+		<< " *Aces score (1) or (11) depending on if you would reach 21 or not.\n\n"
+		<< "If you hit 21, you get a BlackJack and your credits are doubled.\n" 
+		<< "If you get above 21, you lose.\n"
+		<< "If your score is lower than 21, \nyou want to end with a higher score than your opponent.\n\n"
+		<< "====================================================================\n"
 		<< "You start with " << GetCredits() << " credits. You win if you get " << GetCreditsGoal() << " credits!\n" << std::endl;
 
 	while (!IsGameOver)
